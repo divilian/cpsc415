@@ -44,13 +44,13 @@ print("Testing {}...".format(module_name + '.py'))
 points = 0
 
 the_vars = {
-    'WALL': [{'E'}],
-    'R2': list('D2'),
     'HAL': 9000,
+    'BB': '8',
+    'R2': list('D2'),
+    'L': [3],
     'K': {'2SO'},
     'C': ['3PO'],
-    'BB': '8',
-    'L': [3],
+    'WALL': [{'E'}],
     'Poppins': set(list('supercalifragilisticexpialidocious')),
     'Galactica': { 'Karl':'Helo', 'Kara':'Starbuck', 'Lee':'Apollo', 
         'Sharon':'Boomer', 'Marge':'Racetrack', 'Louanne':'Kat' }
@@ -60,9 +60,13 @@ for var,val in the_vars.items():
     #print(f" *** var {var}")
     if var not in dir(stud_module):
         print(f"   *** var {var} missing!")
+        print("Variables incomplete or incorrect.")
         break
-    if (type(val) != type(getattr(stud_module,var)) or
-            val != getattr(stud_module,var)):
+    if type(val) != type(getattr(stud_module,var)):
+        print(f"   *** var {var} broken! ({type(val).__name__} != {type(getattr(stud_module,var)).__name__})")
+        print("Variables incomplete or incorrect.")
+        break
+    if val != getattr(stud_module,var):
         print(f"   *** var {var} broken! ({val} != {getattr(stud_module,var)})")
         print("Variables incomplete or incorrect.")
         break
