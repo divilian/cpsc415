@@ -6,6 +6,7 @@ Stephen Davies, University of Mary Washington, fall 2023
 
 import sys
 import importlib
+import re
 
 ''' 
 To run this program, make sure you have a Python file in the current directory
@@ -28,12 +29,17 @@ if len(sys.argv) != 2:
     sys.exit(1)
 
 try:
-    stud_module = importlib.import_module(sys.argv[1] + '_pythonpractice')
+    module_name = sys.argv[1]
+    if module_name.endswith(".py"):
+        module_name = re.sub(r"\.py", r"", module_name)
+    if not module_name.endswith("_pythonpractice"):
+        module_name += "_pythonpractice"
+    stud_module = importlib.import_module(module_name)
 except Exception as err:
     print(str(err))
     sys.exit(2)
 
-print("Testing {}...".format(sys.argv[1] + '_pythonpractice.py'))
+print("Testing {}...".format(module_name + '.py'))
 
 points = 0
 
@@ -52,12 +58,14 @@ the_vars = {
 
 for var,val in the_vars.items():
     #print(f" *** var {var}")
-    if (var not in dir(stud_module) or
-        type(val) != type(getattr(stud_module,var)) or
-        val != getattr(stud_module,var)):
-            print(f"   *** var {var} broken! ({val} != {getattr(stud_module,var)})")
-            print("Variables incomplete or incorrect.")
-            break
+    if var not in dir(stud_module):
+        print(f"   *** var {var} missing!")
+        break
+    if (type(val) != type(getattr(stud_module,var)) or
+            val != getattr(stud_module,var)):
+        print(f"   *** var {var} broken! ({val} != {getattr(stud_module,var)})")
+        print("Variables incomplete or incorrect.")
+        break
 else:
     names = ['Germanna_levels','UMW_levels','MaryWash_levels','CNU_levels']
     for name in names:
@@ -267,8 +275,8 @@ def test_the_rest():
 
 
 try:
-    Stud_class = getattr(stud_module,sys.argv[1].capitalize() +
-        'PythonPractice')
+    unadorned = re.sub(r'_pythonpractice','',module_name)
+    Stud_class = getattr(stud_module,unadorned.capitalize() + 'PythonPractice')
     test_the_rest()
 except Exception as err:
     print(str(err))
