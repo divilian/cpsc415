@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 '''
-CPSC 415 -- Homework #0 support file
+CPSC 415 -- Program #0 support file
 Stephen Davies, University of Mary Washington, fall 2023
 '''
 
