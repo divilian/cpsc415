@@ -49,7 +49,7 @@ class Suite():
             logging.info('Running seeds {}-{}...'.format(start_seed,
                 ending_seed))
             output_file = 'output{}.csv'.format(start_seed)
-            cmd_line = ['python','./chunk_vacuum.py', userid, '{}-{}'.format(
+            cmd_line = ['python3','./chunk_vacuum.py', userid, '{}-{}'.format(
                 start_seed, ending_seed), str(max_steps) ]
             procs.append(subprocess.Popen(cmd_line))
             output_files.append(output_file)
@@ -79,8 +79,8 @@ class Suite():
         for ofile in glob.glob('output[0-9]*.csv'):
             os.remove(ofile)
         med = statistics.median(scores)
-        if med > 4000:
-            print("\n{} earned +40XP! (the max)".format(userid))
+        if med > 5000:
+            print("\n{} earned +50XP! (the max)".format(userid))
         elif med < 0:
             print("\n{} earned +0XP, sorry!".format(userid))
         else:
