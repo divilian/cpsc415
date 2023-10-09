@@ -34,7 +34,7 @@ class Puzzle():
         """
         np.random.seed(seed)
         new_puzzle = Puzzle(n)
-        NUM_RANDOM_MOVES = n**5    # Should be enough I reckon.
+        NUM_RANDOM_MOVES = 50    # Should be enough I reckon.
         for _ in range(NUM_RANDOM_MOVES):
             new_puzzle._make_a_coupla_random_moves()
         return new_puzzle
