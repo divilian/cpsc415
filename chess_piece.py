@@ -142,9 +142,18 @@ class Ray(Piece):
     def _move_yourself(self, orig_loc, loc, board):
         if loc in board:
             # This is a capture. Demote to pawn.
-            new_pawn = Pawn(self.color)
-            del board[orig_loc]
-            board[loc] = new_pawn
+            if self.color == 'white':
+                n = cfg.NUM_ROWS
+            else:
+                n = 1
+            if int(loc[1]) == n:
+                new_queen = Queen(self.color)
+                del board[orig_loc]
+                board[loc] = new_queen   
+            else:
+                new_pawn = Pawn(self.color)
+                del board[orig_loc]
+                board[loc] = new_pawn
         else:
             super()._move_yourself(orig_loc, loc, board)
 
