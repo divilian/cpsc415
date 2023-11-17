@@ -140,7 +140,7 @@ def extract_clauses(tree):
         clauses |= extract_clauses(tree.right)
     elif tree.me in ['-','v']:
         as_text = re.sub(r'[\(\)]','', str(tree))
-        as_text = re.sub(r'v',' ', as_text)
+        as_text = re.sub(r' v ',' ', as_text)
         clauses |= {Clause.parse(as_text)}
     else:
         raise(f"Illegal operator {tree.me} in CNF sentence!")
