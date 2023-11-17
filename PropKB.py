@@ -65,6 +65,10 @@ class Clause():
         under that assignment.
         """
         return any([assignments[lit.var] != lit.neg for lit in self.lits ])
+    # Not overriding __eq__() as this causes cascading infinite loops.
+    def equivalent_to(self, other):
+        return (all([ sl in other.lits for sl in self.lits ]) and
+            all([ ol in self.lits for ol in other.lits ]))
     def __str__(self):
         return " ∨ ".join(str(l) for l in list(self.lits))
     def __repr__(self):
@@ -103,6 +107,23 @@ class KB():
         from cnf import convert_to_cnf
         for clause in convert_to_cnf(fact):
             self.add_clause(clause)
+
+    def retract(self, fake_news):
+        """
+        Update this KB by removing the passed non-fact (represented as a string
+        of propositional logic) if it was entered earlier. This isn't as easy
+        as it sounds, and won't always work if the exact negation of the fake
+        news wasn't directly previously inserted, but rather was derived from
+        previous facts.
+        """
+        from cnf import convert_to_cnf
+        clauses_to_remove = set()
+        for retracted_clause in convert_to_cnf(fake_news):
+            for clause in self.clauses:
+                if retracted_clause.equivalent_to(clause):
+                    clauses_to_remove |= {clause}
+        for clause in clauses_to_remove:
+            self.remove_clause(clause)
 
     def ask(self, hypothesis):
         """
