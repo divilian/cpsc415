@@ -331,7 +331,7 @@ if __name__ == "__main__":
         print("Created empty KB.")
 
     print("Add (additional) facts to the KB like this 'tell: (b ^ c) => d'")
-    print("Query the KB like this 'ask: a v -b'")
+    print("Query the KB like this 'ask: a + -b'")
     pattern = re.compile(r'(?P<cmd>\w+):? ?(?P<sent>.*)')
     user_input = input("ask/tell/vars (done): ")
     while user_input != "done":

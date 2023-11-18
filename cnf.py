@@ -56,9 +56,9 @@ class Node():
                 return not right
             if self.me == '^':
                 return left and right
-            elif self.me == 'v':
+            elif self.me == '+':
                 return left or right
-            elif self.me == 'x':
+            elif self.me == '⊕':
                 return left != right
             elif self.me == '=>':
                 return not left or right
@@ -86,7 +86,7 @@ def is_in_cnf(tree):
         return True
     if tree.me == "^":
         return is_in_cnf(tree.left) and is_in_cnf(tree.right)
-    if tree.me == "v":
+    if tree.me == "+":
         return contains_only_ors(tree.left) and contains_only_ors(tree.right)
     return False
 
@@ -100,7 +100,7 @@ def contains_only_ors(tree):
         return True
     if tree.me == "-" and type(tree.right) is str:
         return True
-    if tree.me == "v":
+    if tree.me == "+":
         return contains_only_ors(tree.left) and contains_only_ors(tree.right)
     return False
 
@@ -138,9 +138,9 @@ def extract_clauses(tree):
     if tree.me == '^':
         clauses |= extract_clauses(tree.left)
         clauses |= extract_clauses(tree.right)
-    elif tree.me in ['-','v']:
+    elif tree.me in ['-','+']:
         as_text = re.sub(r'[\(\)]','', str(tree))
-        as_text = re.sub(r' v ',' ', as_text)
+        as_text = re.sub(r'\+',' ', as_text)
         clauses |= {Clause.parse(as_text)}
     else:
         raise(f"Illegal operator {tree.me} in CNF sentence!")
@@ -170,7 +170,7 @@ def eliminate_equiv(non_cnf_tree):
 def eliminate_xors(non_cnf_tree):
     if type(non_cnf_tree) is Node:
         tree = deepcopy(non_cnf_tree)
-        if tree.me == "x":
+        if tree.me == "⊕":
             other = deepcopy(non_cnf_tree)
             tree.left = Node(None,"-",eliminate_xors(tree.left))
             tree.me = "^"
@@ -178,7 +178,7 @@ def eliminate_xors(non_cnf_tree):
             other.left = eliminate_xors(other.left)
             other.me = "^"
             other.right = Node(None,"-",eliminate_xors(other.right))
-            return Node(left=tree, me="v", right=other)
+            return Node(left=tree, me="+", right=other)
         else:
             tree.left = eliminate_equiv(tree.left)
             tree.right = eliminate_equiv(tree.right)
@@ -191,7 +191,7 @@ def eliminate_implies(non_cnf_tree):
         tree = deepcopy(non_cnf_tree)
         if tree.me == "=>":
             tree.left = Node(None,"-",eliminate_implies(tree.left))
-            tree.me = "v"
+            tree.me = "+"
             tree.right = eliminate_implies(tree.right)
             return tree
         else:
@@ -212,9 +212,9 @@ def move_neg_in(non_cnf_tree):
                 # Turn ¬(α∧β) into (¬α∨¬β) (DeMorgan's)
                 tree.right.left = Node(None,"-",move_neg_in(tree.right.left))
                 tree.right.right = Node(None,"-",move_neg_in(tree.right.right))
-                tree.right.me = "v"
+                tree.right.me = "+"
                 return tree.right
-            elif type(tree.right) is Node  and  tree.right.me == "v":
+            elif type(tree.right) is Node  and  tree.right.me == "+":
                 # Turn ¬(α∨β) into (¬α∧¬β) (DeMorgan's)
                 tree.right.left = Node(None,"-",move_neg_in(tree.right.left))
                 tree.right.right = Node(None,"-",move_neg_in(tree.right.right))
@@ -235,7 +235,7 @@ def distribute(non_cnf_tree):
         return non_cnf_tree
     if type(non_cnf_tree) is Node:
         tree = deepcopy(non_cnf_tree)
-        if tree.me == 'v':
+        if tree.me == '+':
             if type(tree.left) is Node and tree.left.me == '^':
                 # Here we have (α∧β)∨γ and need to get (α∨γ)∧(β∨γ).
                 alpha = distribute(tree.left.left)
@@ -243,8 +243,8 @@ def distribute(non_cnf_tree):
                 gamma = distribute(tree.right)
                 gamma_clone = deepcopy(gamma)
                 tree.me = "^"
-                tree.left = Node(alpha,"v",gamma)
-                tree.right = Node(beta,"v",gamma)
+                tree.left = Node(alpha,"+",gamma)
+                tree.right = Node(beta,"+",gamma)
                 return distribute(tree)
             elif type(tree.right) is Node and tree.right.me == '^':
                 # Here we have γ∨(α∧β) and need to get (γ∨α)∧(γ∨β).
@@ -253,8 +253,8 @@ def distribute(non_cnf_tree):
                 gamma = distribute(tree.left)
                 gamma_clone = deepcopy(gamma)
                 tree.me = "^"
-                tree.left = Node(gamma,"v",alpha)
-                tree.right = Node(gamma,"v",beta)
+                tree.left = Node(gamma,"+",alpha)
+                tree.right = Node(gamma,"+",beta)
                 return distribute(tree)
             tree.left = distribute(tree.left)
             tree.right = distribute(tree.right)
@@ -287,20 +287,20 @@ def parse(tokens):
             while ops and ops[-1] not in ['(','[','<=>']:
                 make_node(ops, operands)
             ops.append('=>')
-        elif token in ['v','∨']:
+        elif token in ['+','∨']:
             while ops and ops[-1] not in ['(','[','<=>','=>']:
                 make_node(ops, operands)
-            ops.append('v')
-        elif token in ['x','⊕']:
+            ops.append('+')
+        elif token in ['⊕']:
             while ops and ops[-1] not in ['(','[','<=>','=>']:
                 make_node(ops, operands)
-            ops.append('x')
+            ops.append('⊕')
         elif token in ['^','∧']:
-            while ops and ops[-1] not in ['(','[','<=>','=>','v']:
+            while ops and ops[-1] not in ['(','[','<=>','=>','+']:
                 make_node(ops, operands)
             ops.append('^')
         elif token in ['-','¬']:
-            while ops and ops[-1] not in ['(','[','<=>','=>','v','^','∧']:
+            while ops and ops[-1] not in ['(','[','<=>','=>','+','^','∧']:
                 make_node(ops, operands)
             ops.append('-')
         elif token in ['(','[']:
@@ -322,7 +322,6 @@ def parse(tokens):
 
     return operands.pop()
 
-# TODO raise exception if "v" or "x" is used as a symbol
 def tokenize(s):
     """
     Given a sentence (string) of propositional logic, return a list of its
@@ -331,12 +330,12 @@ def tokenize(s):
         - () and [] for grouping
         - - or ¬ for "not"
         - ^ or ∧ for "and"
-        - v or ∨ for "or"  (note that "v" is not a valid symbol name)
+        - + or ∨ for "or"
         - => or ⇒ for "implies"
         - <=> or ⇔ for "equiv"
-        - x or ⊕ for "xor"  (note that "x" is not a valid symbol name)
+        - ⊕ for "xor"
     """
-    return re.findall(r'\(|\)|\[|\]|\^|v|=>|<=>|x|-|¬|⇒|⇔|∧|∨|⊕|\w+', s)
+    return re.findall(r'\(|\)|\[|\]|\^|\+|=>|<=>|-|¬|⇒|⇔|∧|∨|⊕|\w+', s)
 
 
 if __name__ == "__main__":
