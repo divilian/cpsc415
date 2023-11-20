@@ -13,7 +13,8 @@ from clue import CluePlayer, suspects, weapons, rooms, Card
 # >>> print(weapons)
 # >>> print(rooms)
 #
-# Each Card object has a name and a category:
+# Each Card object has a name and a category, accessible with the dot (".")
+# notation:
 # >>> print(f"{suspects[0].name} is a {suspects[0].category}")
 # mustard is a SUSPECT
 
@@ -51,25 +52,30 @@ class starting_CluePlayer(CluePlayer):
         to the next player in line. You will be told which card they show you,
         if any, in a future call to your .secretly_observe() method. If they do
         not have any of your named cards, your .secretly_observe() method will
-        never be called; only your .publicly_observe() method.
+        never be called; only your .publicly_observe() method will be.
         """
         pass
 
     def publicly_observe(self, suggesting_player_num, suggestion,
         responding_player_num, revealed_a_card):
         """
-        This method will be called on your player whenever anyone takes a turn.
-        It tells you that a certain player made a suggestion (a tuple with
-        three named cards, in suspect/weapon/room order) to another player,
-        and whether or not that player secretly showed them a card.
+        This method will be called on your player whenever anyone makes a
+        suggestion (including you). It tells you that a certain player made a
+        suggestion (a tuple with three named cards, in suspect/weapon/room
+        order) to another player, and whether or not that second player
+        secretly showed them a card.
         """
         pass
 
     def secretly_observe(self, responding_player_num, card):
         """
         This method will be called on your player whenever you take your turn
-        and make a suggestion. The card passed will be the card that the
-        responding player secretly showed you (one of the three you named).
+        and make a suggestion, and one of your opponents does have one of the
+        cards you named. The card passed will be the card that the responding
+        player secretly showed you (one of the three you named). This method is
+        *not* called if an opponent does not have any of your three cards; the
+        way you'll know that is by paying attention to your .publicly_observe()
+        method.
         """
         pass
 
@@ -77,8 +83,8 @@ class starting_CluePlayer(CluePlayer):
         """
         This method will be called on your player whenever the player before
         you suggests a murder solution (three named cards, in suspect/weapon/
-        room order). You must return one of the three cards, or None if you
-        don't have any of them.
+        room order). You must return one of the three cards to secretly show
+        them, or None if you don't have any of them.
         """
         pass
 
