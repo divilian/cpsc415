@@ -180,8 +180,8 @@ def eliminate_xors(non_cnf_tree):
             other.right = Node(None,"-",eliminate_xors(other.right))
             return Node(left=tree, me="+", right=other)
         else:
-            tree.left = eliminate_equiv(tree.left)
-            tree.right = eliminate_equiv(tree.right)
+            tree.left = eliminate_xors(tree.left)
+            tree.right = eliminate_xors(tree.right)
             return tree
     else:
         return non_cnf_tree
