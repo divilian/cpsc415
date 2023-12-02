@@ -26,7 +26,7 @@ procs = []
 num_chunks = max(int(sys.argv[4]) // GAMES_PER_CHUNK,1)
 for chunk_num in range(1,num_chunks+1):
     print(f"Starting chunk {chunk_num} of {num_chunks}...")
-    procs.append(subprocess.Popen([ './clue_chunk.py',
+    procs.append(subprocess.Popen([ 'python3', 'clue_chunk.py',
         sys.argv[1], sys.argv[2], sys.argv[3],
         str(min(GAMES_PER_CHUNK, int(sys.argv[4]))) ],
         encoding="utf-8", stdout=subprocess.PIPE))
