@@ -58,9 +58,13 @@ class Clue():
     def play(self):
         self.deck = Deck()
         self._init_players()
-        random.shuffle(self.players)  # Random who goes first, etc
+        self.pns = [0,1,2]   # "player numbers"
+        random.shuffle(self.pns)   # Random who goes first, etc
+        self.players = [ self.players[n] for n in self.pns ]
+        self.hands = [ self.hands[n] for n in self.pns ]
         while True:
             player = self.players.pop(0)
+            hand = self.hands.pop(0)
             if player.dqd:
                 logging.info(f"(Skipping {player}, who DQ'd.)")
             elif player.ready_to_accuse():
@@ -90,6 +94,14 @@ class Clue():
                     if card:
                         logging.debug(f"{responding_pl} shows: {card.name}.")
                     else:
+                        if any([ s in self.hands[resp_num]
+                                for s in suggestion ]):
+                            sys.exit(str(responding_pl) + " lied! (Said " +
+                                f"they couldn't help <" +
+                                ",".join([ s.name for s in suggestion ]) +
+                                "> but actually had <" + 
+                                ",".join([ c.name
+                                    for c in self.hands[resp_num] ])+ ">")
                         logging.debug(f"{responding_pl} can't help.")
                     for p in [player] + self.players:
                         p.publicly_observe(player.player_num,
@@ -101,18 +113,19 @@ class Clue():
                         break
                 
             self.players.append(player)
+            self.hands.append(hand)
 
     def _init_players(self):
-        hands = [ set(), set(), set() ]
+        self.hands = [ set(), set(), set() ]
         num = 0
         try:
             while True:
-                hands[num] |= {self.deck.deal()}
+                self.hands[num] |= {self.deck.deal()}
                 num = (num + 1) % len(self.player_classes)
         except:
             pass
         self.players = [ p(h,n)
-            for p, h, n in zip(self.player_classes, hands, range(1,4)) ]
+            for p, h, n in zip(self.player_classes, self.hands, range(1,4)) ]
 
     def _player_name_of(self, player):
         return re.sub('_CluePlayer','',type(player).__name__)
