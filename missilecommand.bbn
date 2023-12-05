@@ -1,0 +1,5 @@
+CLEANED: cleaned=.3 ~cleaned=.7
+YELLEDAT|cleaned: yelledat=.1 ~yelledat=.9
+YELLEDAT|~cleaned: yelledat=.5 ~yelledat=.5
+MISSILE|yelledat: highScore=.05 personalHigh=.15 sucked=.8
+MISSILE|~yelledat: highScore=.1 personalHigh=.2 sucked=.7

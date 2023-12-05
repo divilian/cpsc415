@@ -1,0 +1,5 @@
+SNOWY: snowy=.1 ~snowy=.9
+HOTCHOC|snowy: hotchoc=.9 ~hotchoc=.1
+HOTCHOC|~snowy: hotchoc=.4 ~hotchoc=.6
+LATE|snowy: late=.2 ~late=.8
+LATE|~snowy: late=.1 ~late=.9

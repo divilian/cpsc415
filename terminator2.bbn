@@ -1,0 +1,16 @@
+R|e: r=.8 ~r=.2
+K|asylum^~n: k=.9 ~k=.1
+N|asylum: n=.2 ~n=.8
+T|e^r: asylum=.6 foster=.2 atlarge=.2
+R|~e: r=.001 ~r=.999
+K|atlarge^~n: k=.9 ~k=.1
+T|~e^r: asylum=.2 foster=.2 atlarge=.6
+N|foster: n=.9 ~n=.1
+T|~e^~r: asylum=.3 foster=.3 atlarge=.4
+T|e^~r: asylum=.5 foster=.2 atlarge=.3
+E: e=.1 ~e=.9
+K|foster^~n: k=.5 ~k=.5
+K|atlarge^n: k=.95 ~k=.05
+N|atlarge: n=.2 ~n=.8
+K|foster^n: k=.01 ~k=.99
+K|asylum^n: k=.95 ~k=.05
