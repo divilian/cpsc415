@@ -104,7 +104,8 @@ class KB():
     def tell(self, fact):
         """
         Update this KB by adding the passed fact (represented as a string of
-        propositional logic).
+        propositional logic), but only the clauses in that CNF'd fact that we
+        don't already know (see .add_clause()).
         """
         from cnf import convert_to_cnf
         for clause in convert_to_cnf(fact):
@@ -207,8 +208,11 @@ class KB():
             return True
 
     def add_clause(self, clause):
-        self.clauses |= {clause}
-        self.vars |= { l.var for l in clause.lits }
+        # Don't redundantly add this clause if we already have an equivalent
+        # one in the KB.
+        if not any([ clause.equivalent_to(c) for c in self.clauses ]):
+            self.clauses |= {clause}
+            self.vars |= { l.var for l in clause.lits }
 
     def remove_clause(self, clause):
         self.clauses -= {clause}
