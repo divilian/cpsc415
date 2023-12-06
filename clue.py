@@ -84,15 +84,16 @@ class Clue():
                         logging.warning("All players DQ'd!")
                         return "Tie"
             else:
+                logging.info(f"{player} suggesting...")
                 suggestion = player.get_suggestion()
-                logging.debug(f"{player} suggests: "
+                logging.info(f"{player} suggested: "
                     f"{tuple( s.name for s in suggestion )}.")
                 for resp_num in range(0,len(self.players)):
                     responding_pl = self.players[resp_num]
                     card = responding_pl.handle_suggestion(
                         player.player_num, suggestion)
                     if card:
-                        logging.debug(f"{responding_pl} shows: {card.name}.")
+                        logging.info(f"{responding_pl} shows: {card.name}.")
                     else:
                         if any([ s in self.hands[resp_num]
                                 for s in suggestion ]):
@@ -102,7 +103,7 @@ class Clue():
                                 "> but actually had <" + 
                                 ",".join([ c.name
                                     for c in self.hands[resp_num] ])+ ">")
-                        logging.debug(f"{responding_pl} can't help.")
+                        logging.info(f"{responding_pl} can't help.")
                     for p in [player] + self.players:
                         p.publicly_observe(player.player_num,
                             suggestion, responding_pl.player_num,
@@ -126,6 +127,8 @@ class Clue():
             pass
         self.players = [ p(h,n)
             for p, h, n in zip(self.player_classes, self.hands, range(1,4)) ]
+        for p in self.players:
+            logging.info(f"{p}: {[ c.name for c in p.hand ]}.")
 
     def _player_name_of(self, player):
         return re.sub('_CluePlayer','',type(player).__name__)
@@ -222,7 +225,7 @@ def get_player_class(userid):
 
 if __name__ == "__main__":
 
-    logging.basicConfig(level=logging.CRITICAL)
+    logging.basicConfig(level=logging.INFO)
 
     if len(sys.argv) != 4:
         print_usage()
