@@ -55,6 +55,8 @@ class Clause():
         return lit in self.lits
     def contains_variable(self, var):
         return var in [ l.var for l in self.lits ]
+    def get_vars(self):
+        return { l.var for l in self.lits }
     def polarity_of_variable(self, var):
         for lit in self.lits:
             if lit.var == var:
@@ -191,6 +193,14 @@ class KB():
         remaining_clauses = deepcopy(self.clauses)
         remaining_clauses |= neg_hypo_clauses
         assignments = {}
+
+        all_vars = set()
+        for c in remaining_clauses:
+            all_vars |= c.get_vars()
+        if not all([ v in self.vars for v in all_vars ]):
+            # This query has variables we know nothing about!
+            return False
+
         if self.solve_rec(remaining_clauses, assignments):
             return False
         else:
