@@ -335,7 +335,7 @@ def tokenize(s):
         - <=> or ⇔ for "equiv"
         - ⊕ for "xor"
     """
-    return re.findall(r'\(|\)|\[|\]|\^|\+|=>|<=>|-|¬|⇒|⇔|∧|∨|⊕|\w+', s)
+    return re.findall(r'\(|\)|\[|\]|\^|\+|=>|<=>|-|¬|⇒|⇔|∧|∨|⊕|[\w!]+', s)
 
 
 if __name__ == "__main__":
