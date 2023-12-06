@@ -324,7 +324,7 @@ class KB():
     def __str__(self):
         return " ∧ ".join(f"({c})" for c in list(self.clauses))
     def __repr__(self):
-        return f"KB({self.clauses})"
+        return f"KB(" + ",\n   ".join([ str(c) for c in self.clauses]) + ")"
 
 
 if __name__ == "__main__":
