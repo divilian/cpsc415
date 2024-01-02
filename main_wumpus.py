@@ -3,7 +3,6 @@
 CPSC 415 -- Homework #4 support file
 Stephen Davies, University of Mary Washington, fall 2023
 '''
-
 import logging
 import importlib
 import sys
@@ -73,16 +72,15 @@ if not issubclass(Explorer_class, ExplorerAgent):
 # Go!
 if do_suite:
     from suite_wumpus import *
-    results = Suite(range(seed,seed+num_runs)).run(Explorer_class)
-    scores, steps = ([ score for score,_ in results ],
-                    [ steps for _,steps in results ])
-    print('seed,score,num_steps')
-    for i,(score, num_steps) in enumerate(results):
-        print('{},{},{}'.format(seed+i,score,num_steps))
-    print('# Score: min {}, max {}, med {}, mean {}'.format(min(scores),
-        max(scores), int(statistics.median(scores)), np.array(scores).mean()))
-    print('# Num steps: min {}, max {}, med {}, mean {}'.format(min(steps),
-        max(steps), int(statistics.median(steps)), np.array(steps).mean()))
+    results = Suite(seed,num_runs).run(sys.argv[1])
+    print('# Score: min {}, max {}, med {}, mean {}'.format(
+        min(results.scores), max(results.scores),
+        int(statistics.median(results.scores)),
+        np.array(results.scores).mean()))
+    print('# Num steps: min {}, max {}, med {}, mean {}'.format(
+        min(results.steps), max(results.steps),
+        int(statistics.median(results.steps)),
+        np.array(results.steps).mean()))
 else:
     # Actually instantiate the student's agent.
     explorer = Explorer_class()
